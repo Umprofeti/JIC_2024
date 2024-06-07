@@ -1,8 +1,11 @@
 'use client'
 import React,{useState} from 'react';
+// @ts-ignore
 import { MapContainer, TileLayer, GeoJSON, useMapEvents, Marker, Popup } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
+// @ts-ignore
 import { cellToBoundary, latLngToCell } from 'h3-js';
+import { GeoJsonData, MapComponentProps } from './interfaces/interfaces';
 
 // Estilo de los hexágonos de los clientes
 const geoJsonStyleClients= {
@@ -23,19 +26,11 @@ weight: 2
 };
 
 
-// Función para crear datos GeoJSON
-interface GeoJsonData {
-    type: string;
-    geometry: {
-        type: string;
-        coordinates: number[][];
-    };
-    id: string;
-}
+
 
 // Función para crear datos GeoJSON
 //la funcion celltoBoundary convierte las coordenadas de un hexagono en un poligono
-const createGeoJsonData = (hexIndex: [number, number], index: number): GeoJsonData => {
+const createGeoJsonData = (hexIndex: number[], index: number): GeoJsonData => {
     //Usar valores entre 11 - 12 para la resolucion ( 11 es mas detallado 12 es menos detallado)
     const indexHex = latLngToCell(hexIndex[0], hexIndex[1], 11);
     return {
@@ -61,17 +56,6 @@ function onEachFeature(feature: any, layer: any, mensaje: string | string[], emp
 
 
 
-interface CoordPair {
-    latitude: number;
-    longitude: number;
-}
-
-interface MapComponentProps {
-    clientUbi: [number, number][]; // Array of tuples, each tuple contains two numbers (latitude, longitude)
-    transpUbi: CoordPair[] ; //Array of objects with latitude and longitude properties
-    infoClient: Array<string> ; //Names of the clients
-    infoTransp: Array<string> ; // Information of the driver
-}
 
 // Función para detectar la ubicación en tiempo real
 function LocationMarker() {
