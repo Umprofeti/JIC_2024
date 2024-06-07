@@ -17,6 +17,7 @@
     "isolatedModules": true,
     "jsx": "preserve",
     "incremental": true,
+    "allowSyntheticDefaultImports": true,
     "plugins": [
       {
         "name": "next"
@@ -37,7 +38,7 @@
     "**/*.ts",
     "**/*.tsx",
     ".next/types/**/*.ts"
-  ],
+, "src/app/(app)/layout.js"  ],
   "exclude": [
     "node_modules"
   ]
