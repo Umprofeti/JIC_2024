@@ -64,7 +64,7 @@ function LocationMarker() {
       click() {
         map.locate()
       },
-      locationfound(e) {
+      locationfound(e: { latlng: React.SetStateAction<null>; }) {
         setPosition(e.latlng)
         map.flyTo(e.latlng, map.getZoom())
       },
@@ -91,16 +91,16 @@ export default function MapComponent({ clientUbi, transpUbi, infoClient, infoTra
                 <GeoJSON 
                     key={`geojson-${index}`} 
                     data={createGeoJsonData(hexIndex, index)}
-                    onEachFeature={(feature, layer) => onEachFeature(feature, layer, infoClient[index], false)}           
+                    onEachFeature={(feature: any, layer: any) => onEachFeature(feature, layer, infoClient[index], false)}           
                     style={geoJsonStyleClients}
                 /> )
             )}
             {/* Se genera un GeoJSON (hexagono) por cada ubicacion de conductor */}
             <GeoJSON 
                 key={`geojson-${transpUbi}`} 
-                data={createGeoJsonData(transpUbi, transpUbi)} 
+                data={createGeoJsonData(transpUbi, transpUbi[0])} 
                 style={geoJsonStyleDriver} 
-                onEachFeature={(feature, layer) => onEachFeature(feature, layer, infoTransp, true)}          
+                onEachFeature={(feature: any, layer: any) => onEachFeature(feature, layer, infoTransp, true)}          
                 className={''}
             /> 
 

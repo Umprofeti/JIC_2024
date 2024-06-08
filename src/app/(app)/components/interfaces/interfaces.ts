@@ -3,7 +3,7 @@ export interface GeoJsonData {
     type: string;
     geometry: {
         type: string;
-        coordinates: [number, number];
+        coordinates: any;
     };
     id: string;
 }
