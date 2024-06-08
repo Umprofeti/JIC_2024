@@ -1,5 +1,18 @@
 import React from 'react'
 import dynamic from 'next/dynamic';
+import { getPayloadHMR } from '@payloadcms/next/utilities'
+import configPromise from '@payload-config'
+const payload = await getPayloadHMR({ config: configPromise })
+
+const dataUbi = await payload.find({
+  collection: 'customers',
+  depth: 2,
+})
+
+const dataReco = await payload.find({
+  collection: 'recolectors',
+  depth: 2,
+})
 
 const MapComponent = dynamic(
   () => import('./components/MapComponent'),
@@ -7,17 +20,10 @@ const MapComponent = dynamic(
 );
 
 
-export default function page() {
 
-  //Información de los clientes y transportista temporal
-  const clientUbicacion = [[8.886979, -79.766596], [8.885919, -79.769384], [8.885500, -79.762283]]
-  const infoClient = ["Karla Martinez", "Max Perez", "Elba Montes"]
-  const infoTransp = ["Camion de la empresa", "Conductor: Mario Perez", "Placa: 1234-5678"]
-  const transpUbicacion:number[] = [8.887084, -79.770615]
-
-  //Solo se necesita enviar los valores de lat y long del conductor el mapa se actualiza solo
-
+export default async function page() {
   return (
-    <MapComponent clientUbi={clientUbicacion} transpUbi={transpUbicacion} infoClient={infoClient} infoTransp={infoTransp} />
+    <MapComponent customersInfo={dataUbi} recolectorInfo={dataReco.docs[0]} />
   )
 }
+

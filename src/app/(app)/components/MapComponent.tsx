@@ -5,7 +5,7 @@ import { MapContainer, TileLayer, GeoJSON, useMapEvents, Marker, Popup } from 'r
 import 'leaflet/dist/leaflet.css';
 // @ts-ignore
 import { cellToBoundary, latLngToCell } from 'h3-js';
-import { GeoJsonData, MapComponentProps } from './interfaces/interfaces';
+import { GeoJsonData } from './interfaces/interfaces';
 
 // Estilo de los hexágonos de los clientes
 const geoJsonStyleClients= {
@@ -29,10 +29,13 @@ weight: 2
 
 
 // Función para crear datos GeoJSON
-//la funcion celltoBoundary convierte las coordenadas de un hexagono en un poligono
-const createGeoJsonData = (hexIndex: number[], index: number): GeoJsonData => {
+//la funcion celltoBoundary convierte las coordenadas a un hexagono
+const createGeoJsonData = (long: number,lat:number, index: number): GeoJsonData => {
     //Usar valores entre 11 - 12 para la resolucion ( 11 es mas detallado 12 es menos detallado)
-    const indexHex = latLngToCell(hexIndex[0], hexIndex[1], 11);
+    lat = parseFloat(lat.toString())
+    long = parseFloat(long.toString())
+
+    const indexHex = latLngToCell(lat, long, 11);
     return {
         type: 'Feature',
         geometry: {
@@ -44,11 +47,12 @@ const createGeoJsonData = (hexIndex: number[], index: number): GeoJsonData => {
 };
 
 // Función para mostrar el popup
-function onEachFeature(feature: any, layer: any, mensaje: string | string[], empresa: boolean = false): void {
+function onEachFeature(feature: any, layer: any, infoPop:any, empresa: boolean = false): void {
+  let popupContent = '';
     if (empresa) {
-        var popupContent = `<p className={'text-sky-400'}>${mensaje[0]}<hr/><br/>${mensaje[1]}<br/>${mensaje[2]}</p><br/>llegada en 4-8min`;
+      popupContent= `<p>Conductor: ${infoPop['Nombre'] +' ' + infoPop['Apellido']}<br/>ID: ${infoPop['IdEmpleado']}</p>`;
     } else {
-        var popupContent = `<p>Cliente: ${mensaje}</p>`;
+        popupContent = `<p>Cliente: ${infoPop['Nombre'] +' ' + infoPop['Apellido'] +'<br/>NIC: ' + infoPop['NIC']}</p><p>Direccion:${infoPop['LugarDeResidencia']}</p>`;
     }
     // vinculacion del popup al mapa
     layer.bindPopup(popupContent);
@@ -57,7 +61,7 @@ function onEachFeature(feature: any, layer: any, mensaje: string | string[], emp
 
 
 
-// Función para detectar la ubicación en tiempo real
+// Función para detectar la ubicación en tiempo real, por lo menos a mi no me funciona
 function LocationMarker() {
     const [position, setPosition] = useState(null)
     const map = useMapEvents({
@@ -77,7 +81,12 @@ function LocationMarker() {
     )
   }
 
-export default function MapComponent({ clientUbi, transpUbi, infoClient, infoTransp }: MapComponentProps) {
+interface MapComponentProps {
+  recolectorInfo: any;
+  customersInfo: any;
+}
+
+export default function MapComponent({ customersInfo, recolectorInfo }: MapComponentProps) {
     return(
         //Contenedor generar del mapa
         <MapContainer center={[8.886615, -79.765621]} zoom={16} style={{ height: "100vh", width: "100vw" }} >
@@ -87,20 +96,19 @@ export default function MapComponent({ clientUbi, transpUbi, infoClient, infoTra
                 url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
             />
             {/* Se genera un GeoJSON (hexagono) por cada ubicacion de cliente */}
-            {clientUbi.map((hexIndex, index) => (
+            {customersInfo.docs.map((client: { [x: string]: number; }, index: number) => (
                 <GeoJSON 
                     key={`geojson-${index}`} 
-                    data={createGeoJsonData(hexIndex, index)}
-                    onEachFeature={(feature: any, layer: any) => onEachFeature(feature, layer, infoClient[index], false)}           
+                    data={createGeoJsonData(client['Longitud'], client['Latitud'], index)}
+                    onEachFeature={(feature: any, layer: any) => onEachFeature(feature, layer, client, false)}           
                     style={geoJsonStyleClients}
                 /> )
             )}
             {/* Se genera un GeoJSON (hexagono) por cada ubicacion de conductor */}
             <GeoJSON 
-                key={`geojson-${transpUbi}`} 
-                data={createGeoJsonData(transpUbi, transpUbi[0])} 
+                data={createGeoJsonData(recolectorInfo['Longitud'],recolectorInfo['Latitud'], recolectorInfo['id'])} 
                 style={geoJsonStyleDriver} 
-                onEachFeature={(feature: any, layer: any) => onEachFeature(feature, layer, infoTransp, true)}          
+                onEachFeature={(feature: any, layer: any) => onEachFeature(feature, layer, recolectorInfo, true)}          
                 className={''}
             /> 
 
