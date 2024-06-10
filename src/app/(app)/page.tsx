@@ -1,6 +1,5 @@
 import React from 'react'
 import dynamic from 'next/dynamic';
-import Prueba from './components/Prueba'
 import { getPayloadHMR } from '@payloadcms/next/utilities'
 import configPromise from '@payload-config'
 const payload = await getPayloadHMR({ config: configPromise })

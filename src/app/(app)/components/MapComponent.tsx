@@ -1,8 +1,11 @@
 'use client'
 import React,{useState, useEffect} from 'react';
+//@ts-ignore
 import { MapContainer, TileLayer, GeoJSON, useMapEvents, Popup, CircleMarker, Marker } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
+//@ts-ignore
 import { cellToBoundary, latLngToCell } from 'h3-js';
+//@ts-ignore
 import L from 'leaflet';
 
 // Icono del conductor personalizado
