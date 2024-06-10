@@ -21,9 +21,12 @@ const MapComponent = dynamic(
 
 
 
-export default async function page() {
+export default async function Page() {
   return (
-    <MapComponent customersInfo={dataUbi} recolectorInfo={dataReco.docs[0]} />
+    <section className=' overflow-hidden'>
+      hola
+      <MapComponent customersInfo={dataUbi} recolectorInfo={dataReco.docs[0]} />
+    </section>
   )
 }
 

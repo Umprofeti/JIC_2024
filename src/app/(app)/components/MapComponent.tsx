@@ -112,7 +112,7 @@ export default function MapComponent({ customersInfo, recolectorInfo }: MapCompo
 
     return(
       //Contenedor generar del mapa
-      <MapContainer center={[8.948251, -79.651752]} zoom={12} style={{ height: "100vh", width: "100vw" }} >
+      <MapContainer center={[8.948251, -79.651752]} zoom={12} style={{ height: "100vh", width: "100vw", overflow: "hidden" }} >
           {/* Importante la atribuccion, si no se agrega el mapa no se va a mostrar */}
           <TileLayer
               attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
