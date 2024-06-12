@@ -2,6 +2,10 @@ import React from 'react'
 import dynamic from 'next/dynamic';
 import { getPayloadHMR } from '@payloadcms/next/utilities'
 import configPromise from '@payload-config'
+import {SetLocation} from './components/setLocation';
+import { GetRecolectionTime } from './components/getRecolectionTime';
+import { HeaderLogo } from './components/headerLogo';
+
 const payload = await getPayloadHMR({ config: configPromise })
 
 const dataUbi = await payload.find({
@@ -23,9 +27,19 @@ const MapComponent = dynamic(
 
 export default async function Page() {
   return (
-    <section className=' overflow-hidden'>
-      hola
-      <MapComponent customersInfo={dataUbi} recolectorInfo={dataReco.docs[0]} />
+    <section className=' overflow-hidden !z-0'>
+      <div className='flex justify-center items-center w-full top-0 fixed z-[999]'>
+        <HeaderLogo/>
+      </div>
+      <div className='!z-0'>
+        <MapComponent customersInfo={dataUbi} recolectorInfo={dataReco.docs[0]} />
+      </div>
+      <div className='flex justify-between bottom-2 right-3 fixed z-[999]'>
+        <SetLocation/>
+      </div>
+      <div className='flex justify-between bottom-2 left-3 fixed z-[999]'>
+        <GetRecolectionTime/>
+      </div>
     </section>
   )
 }
