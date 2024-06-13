@@ -5,6 +5,7 @@ import configPromise from '@payload-config'
 import {SetLocation} from './components/setLocation';
 import { GetRecolectionTime } from './components/getRecolectionTime';
 import { HeaderLogo } from './components/headerLogo';
+/* import MapComponent from './components/MapComponent'; */
 
 const payload = await getPayloadHMR({ config: configPromise })
 
@@ -34,11 +35,9 @@ export default async function Page() {
       <div className='!z-0'>
         <MapComponent customersInfo={dataUbi} recolectorInfo={dataReco.docs[0]} />
       </div>
-      <div className='flex justify-between bottom-2 right-3 fixed z-[999]'>
-        <SetLocation/>
-      </div>
-      <div className='flex justify-between bottom-2 left-3 fixed z-[999]'>
+      <div className='flex w-full justify-between bottom-2 px-3  fixed z-[999]'>
         <GetRecolectionTime/>
+        <SetLocation/>
       </div>
     </section>
   )
