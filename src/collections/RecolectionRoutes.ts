@@ -2,7 +2,7 @@ import type { CollectionConfig } from 'payload/types'
 
 export const RecolectionRoutes:CollectionConfig = {
     slug: 'recolectionroutes',
-    auth: true,
+    auth: false,
     fields: [
         {
             type:'text',
@@ -33,7 +33,7 @@ export const RecolectionRoutes:CollectionConfig = {
             name: 'Longitud',
         },
         {
-            type: 'text',
+            type: 'number',
             name: 'HoraEstimadaDeLlegada',
             required: true
         },

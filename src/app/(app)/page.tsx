@@ -19,6 +19,11 @@ const dataReco = await payload.find({
   depth: 2,
 })
 
+const dataRecolectionTime = await payload.find({
+  collection: 'recolectionroutes',
+  depth: 2
+})
+
 const MapComponent = dynamic(
   () => import('./components/MapComponent'),
   { ssr: false }
@@ -27,6 +32,7 @@ const MapComponent = dynamic(
 
 
 export default async function Page() {
+  console.log(dataRecolectionTime)
   return (
     <section className=' overflow-hidden !z-0'>
       <div className='flex justify-center items-center w-full top-0 fixed z-[999]'>
