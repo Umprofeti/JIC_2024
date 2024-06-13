@@ -11,8 +11,10 @@ import L from 'leaflet';
 // Icono del conductor personalizado
 const svgIcon = L.divIcon({
   className: 'shadow-2xl',
-  html: `<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <path opacity="0.1" fill-rule="evenodd" clip-rule="evenodd" d="M12 21C16.9706 21 21 16.9706 21 12C21 7.02944 16.9706 3 12 3C7.02944 3 3 7.02944 3 12C3 16.9706 7.02944 21 12 21ZM14.149 15.1848C13.4576 17.1053 10.6665 16.8584 10.323 14.8464C10.2169 14.2248 9.72996 13.7379 9.10837 13.6318C7.09631 13.2882 6.84941 10.4971 8.76993 9.80572L12.6761 8.39948C14.4674 7.75462 16.2001 9.48732 15.5553 11.2786L14.149 15.1848Z" fill="#000000"></path> <path d="M21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12Z" stroke="#000000" stroke-width="2"></path> <path d="M13.9137 15.1001L15.32 11.1939C15.8932 9.60167 14.353 8.06149 12.7608 8.6347L8.85455 10.0409C7.1758 10.6453 7.39162 13.085 9.15038 13.3853C9.87655 13.5093 10.4454 14.0781 10.5694 14.8043C10.8696 16.5631 13.3094 16.7789 13.9137 15.1001Z" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path> </g></svg>`,
-  iconSize: [38, 95], 
+  html: `<svg xmlns="http://www.w3.org/2000/svg" width="38" height="38" fill="currentColor" class="bi bi-truck-front-fill" viewBox="0 0 16 16">
+  <path d="M3.5 0A2.5 2.5 0 0 0 1 2.5v9c0 .818.393 1.544 1 2v2a.5.5 0 0 0 .5.5h2a.5.5 0 0 0 .5-.5V14h6v1.5a.5.5 0 0 0 .5.5h2a.5.5 0 0 0 .5-.5v-2c.607-.456 1-1.182 1-2v-9A2.5 2.5 0 0 0 12.5 0zM3 3a1 1 0 0 1 1-1h8a1 1 0 0 1 1 1v3.9c0 .625-.562 1.092-1.17.994C10.925 7.747 9.208 7.5 8 7.5s-2.925.247-3.83.394A1.008 1.008 0 0 1 3 6.9zm1 9a1 1 0 1 1 0-2 1 1 0 0 1 0 2m8 0a1 1 0 1 1 0-2 1 1 0 0 1 0 2m-5-2h2a1 1 0 1 1 0 2H7a1 1 0 1 1 0-2"/>
+</svg>`,
+  iconSize: [38, 38], 
   
 
 });
@@ -25,15 +27,6 @@ const geoJsonStyleClients= {
     opacity: 1,
     weight: 2
   };
-  
-// Estilo de los hexágonos del conductor
-const geoJsonStyleDriver= {
-color: '#001449',
-fillColor: '#002485',
-fillOpacity: 0.9,
-opacity: 1,
-weight: 2
-};
 
 
 //la funcion celltoBoundary convierte las coordenadas a un hexagono
@@ -54,12 +47,21 @@ const createGeoJsonData = (long: number,lat:number, index: number) => {
 };
 
 // Función para mostrar el popup de acuerdo al marcador presionado
-function onEachFeature(feature: any, layer: any, infoPop:any, empresa: boolean = false): void {
+function onEachFeature(feature: any, layer: any, infoPop:any, customer: boolean = false): void {
   let popupContent = '';
-    if (empresa) {
+    if (customer) {
       popupContent= `<p>Conductor: ${infoPop['Nombre'] +' ' + infoPop['Apellido']}<br/>ID: ${infoPop['IdEmpleado']}</p>`;
     } else {
-        popupContent = `<p>Cliente: ${infoPop['Nombre'] +' ' + infoPop['Apellido'] +'<br/>NIC: ' + infoPop['NIC']}</p><p>Direccion:${infoPop['LugarDeResidencia']}</p>`;
+
+      //Extrae de infoPop la fecha en formato dd/mm/yyyy
+      const date = new Date(infoPop['Fecha']);
+
+
+      popupContent = `
+      <p class="">Fecha de recogida: ${date}</p>
+      <p class="">Direccion: ${infoPop['Provincia']}, ${infoPop['Distrito']}, ${infoPop['Corregimiento']}, ${infoPop['Barriada']}</p>
+      <p>Hora estimada de llegada <span class="font-semibold">${infoPop['HoraEstimadaDeLlegada']}</span></p>
+      `;
     }
     // vinculacion del popup al mapa
     layer.bindPopup(popupContent);
@@ -110,32 +112,24 @@ export default function MapComponent({ customersInfo, recolectorInfo }: MapCompo
         return () => clearInterval(intervalId);
     }, []);
 
-    return(
-      //Contenedor generar del mapa
-      <MapContainer center={[8.948251, -79.651752]} zoom={12} style={{ height: "100vh", width: "100vw", overflow: "hidden" }} >
-          {/* Importante la atribuccion, si no se agrega el mapa no se va a mostrar */}
-          <TileLayer
-              attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-          />
-          {/* Se genera un GeoJSON (hexagono) por cada ubicacion de cliente */}
-          {customersInfo.docs.map((client: { [x: string]: number; }, index: number) => (
-              <GeoJSON 
-                  key={`geojson-${index}`} 
-                  data={createGeoJsonData(client['Longitud'], client['Latitud'], index)}
-                  onEachFeature={(feature: any, layer: any) => onEachFeature(feature, layer, client, false)}           
-                  style={geoJsonStyleClients}
-              /> )
-          )}
-          {/* Se genera un GeoJSON (hexagono) por cada ubicacion de conductor */}
+  return(
+    <MapContainer center={[8.886153949494041, -79.7648399886817]} zoom={14} style={{ height: "100vh", width: "100vw", overflow: "hidden" }} >
+      {/* Importante la atribuccion, si no se agrega el mapa no se va a mostrar */}
+      <TileLayer
+          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+      />
+      {/* Se genera un GeoJSON (hexagono) por cada ubicacion de cliente */}
+      {customersInfo.docs.map((client: { [x: string]: number; }, index: number) => (
           <GeoJSON 
-              data={createGeoJsonData(recolectorInfo['Longitud'],recolectorInfo['Latitud'], recolectorInfo['id'])} 
-              style={geoJsonStyleDriver} 
-              onEachFeature={(feature: any, layer: any) => onEachFeature(feature, layer, recolectorInfo, true)}          
-              className={''}
-          /> 
-          {/* Determina la ubicacion del conductor */}
-          <LocationMarker position={location} infoDriver={recolectorInfo} />
-      </MapContainer>
-    )
+              key={`geojson-${index}`} 
+              data={createGeoJsonData(client['Longitud'], client['Latitud'], index)}
+              onEachFeature={(feature: any, layer: any) => onEachFeature(feature, layer, client, false)}           
+              style={geoJsonStyleClients}
+          /> )
+      )}
+      {/* Determina la ubicacion del conductor */}
+      <LocationMarker position={location} infoDriver={recolectorInfo} />
+    </MapContainer>
+  )
 }
