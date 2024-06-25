@@ -40,7 +40,7 @@ function onEachFeature(feature: any, layer: any, infoPop:any, customer: boolean 
         popupContent = `
       <p class="">Fecha de recogida: ${date}</p>
       <p class="">Direccion: ${infoPop['Provincia']}, ${infoPop['Distrito']}, ${infoPop['Corregimiento']}, ${infoPop['Barriada']}</p>
-      <p>Hora estimada de llegada <span class="font-semibold">${infoPop['HoraEstimadaDeLlegada']}</span></p><button type='button' class='mx-auto btn bg-blue-500 text-white px-4 py-2 rounded shadow'>Marcar como regido</button>
+      <p>Hora estimada de llegada <span class="font-semibold">${infoPop['HoraEstimadaDeLlegada']}</span></p>
       `;
       }else{
         popupContent = `
@@ -60,7 +60,7 @@ interface MapComponentProps {
   recolectorInfo: any; 
 }
 
-export default function MapComponent({ customersInfo, recolectorInfo }: MapComponentProps) {
+export default function MapComponentClient({ customersInfo, recolectorInfo }: MapComponentProps) {
 
     //Ubicacion del conductor en tiempo real
     const [location, setLocation] = useState({ lat: 8.979956, lng: -79.536281 });
@@ -88,21 +88,14 @@ export default function MapComponent({ customersInfo, recolectorInfo }: MapCompo
         <LocationMarker position={location} infoDriver={recolectorInfo} />
     
         {customersInfo.docs.map((client: { [x: string]: number; }, index: number) => 
-          index % 2 === 0 ? (
+          index  === 3 ? (
             <GeoJSON 
               key={`geojson-${index}`} 
               data={createGeoJsonData(client['Longitud'], client['Latitud'], index)}
               onEachFeature={(feature: any, layer: any) => onEachFeature(feature, layer, client, false, false)}           
               style={geoJsonStyleClients}
             />
-          ) : (
-            <GeoJSON 
-              key={`geojson-${index}`} 
-              data={createGeoJsonData(client['Longitud'], client['Latitud'], index)}
-              onEachFeature={(feature: any, layer: any) => onEachFeature(feature, layer, client, false, true)}           
-              style={geoJsonStyleClientsProblems}
-            />
-          )
+          ) : null
         )}
       </MapContainer>
     );

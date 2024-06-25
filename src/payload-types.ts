@@ -10,7 +10,7 @@ export interface Config {
   collections: {
     users: User;
     recolectors: Recolector;
-    recolectionroutes: Recolectionroute;
+    'recolection-routes': RecolectionRoute;
     customers: Customer;
     'payload-preferences': PayloadPreference;
     'payload-migrations': PayloadMigration;
@@ -23,9 +23,6 @@ export interface Config {
       })
     | (Recolector & {
         collection: 'recolectors';
-      })
-    | (Recolectionroute & {
-        collection: 'recolectionroutes';
       })
     | (Customer & {
         collection: 'customers';
@@ -75,9 +72,9 @@ export interface Recolector {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "recolectionroutes".
+ * via the `definition` "recolection-routes".
  */
-export interface Recolectionroute {
+export interface RecolectionRoute {
   id: string;
   Provincia: string;
   Distrito: string;
@@ -85,18 +82,10 @@ export interface Recolectionroute {
   Barriada: string;
   Latitud?: string | null;
   Longitud?: string | null;
-  HoraEstimadaDeLlegada: string;
+  HoraEstimadaDeLlegada: number;
   Fecha: string;
   updatedAt: string;
   createdAt: string;
-  email: string;
-  resetPasswordToken?: string | null;
-  resetPasswordExpiration?: string | null;
-  salt?: string | null;
-  hash?: string | null;
-  loginAttempts?: number | null;
-  lockUntil?: string | null;
-  password?: string | null;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -135,10 +124,6 @@ export interface PayloadPreference {
     | {
         relationTo: 'recolectors';
         value: string | Recolector;
-      }
-    | {
-        relationTo: 'recolectionroutes';
-        value: string | Recolectionroute;
       }
     | {
         relationTo: 'customers';

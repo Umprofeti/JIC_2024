@@ -1,8 +1,7 @@
-import type { CollectionConfig } from 'payload/types'
+import type { CollectionConfig } from 'payload'
 
 export const RecolectionRoutes:CollectionConfig = {
-    slug: 'recolectionroutes',
-    auth: false,
+    slug: 'recolection-routes',
     fields: [
         {
             type:'text',
