@@ -20,6 +20,7 @@ const dataReco = await payload.find({
 
 const dataRecolectionTime = await payload.find({
   collection: "recolection-routes",
+  depth: 2,
 })
 
 
@@ -47,7 +48,7 @@ export default async function Page(req:NextRequest) {
         }
       </div>
       <div className='flex w-full justify-between bottom-2 px-3 fixed z-10'>
-        <GetRecolectionTime/>
+        <GetRecolectionTime data={dataRecolectionTime.docs}/>
         <SetLocation/>
       </div>
     </section>
